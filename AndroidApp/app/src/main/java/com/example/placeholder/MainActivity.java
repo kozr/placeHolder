@@ -4,27 +4,26 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcManager;
-import android.os.Build;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
+import android.os.Parcelable;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Timer;
+import static android.nfc.NdefRecord.createMime;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback {
 
     public static final String TAG = "placeHolder";
 
     private TextView mTextView;
     private NfcAdapter mNfcAdapter;
-    private boolean androidBeamAvailable;
     private Context context;
-    private Timer timer;
+    private TextView mReceival;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,55 +31,66 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = this;
         mTextView = (TextView) findViewById(R.id.helloWorld);
-
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            /*
-             * Disable NFC features here.
-             * For example, disable menu items or buttons that activate
-             * NFC-related features
-             */
-            System.out.println("Not working");
-            // Android Beam file transfer isn't supported
-        } else if (Build.VERSION.SDK_INT <
-                Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            // If Android Beam isn't available, don't continue.
-            System.out.println("Android beam not working");
-            androidBeamAvailable = false;
-            /*
-             * Disable Android Beam file transfer features here.
-             */
-            // Android Beam file transfer is available, continue
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
+            mTextView.setText("NFC is disabled.");
         } else {
-            androidBeamAvailable = true;
-            System.out.println("Android beam is working");
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            new CountDownTimer(5000, 1000) {
-                @Override
-                public void onTick(long l) {
-                }
-
-                @Override
-                public void onFinish() {
-                    if (mNfcAdapter == null) mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
-                    if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
-                        mTextView.setText("NFC is disabled.");
-                    } else {
-                        mTextView.setText("NFC is working!");
-                    }
-                }
-            }.start();
-            
+            mTextView.setText("NFC is working!");
         }
 
+        mNfcAdapter.setNdefPushMessageCallback(this, this);
 
-        handleIntent(getIntent());
     }
 
-    private void handleIntent(Intent intent) {
-        //DSADSADSADASDSAD
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent event) {
+        String text = ("Beam me up, Android!\n\n" +
+                "Beam Time: " + System.currentTimeMillis());
+        NdefMessage msg = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            msg = new NdefMessage(
+                    new NdefRecord[]{createMime(
+                            "application/vnd.com.example.placeholder", text.getBytes())
+                            , NdefRecord.createApplicationRecord("com.example.placeholder")
+                    });
+        }
+        System.out.println(text);
+        return msg;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            System.out.println("HELELELEOEO");
+            processIntent(getIntent());
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
+    }
+
+    /**
+     * Parses the NDEF Message from the intent and prints to the TextView
+     */
+    void processIntent(Intent intent) {
+        mReceival = (TextView) findViewById(R.id.receival);
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        System.out.println(new String(msg.getRecords()[0].getPayload()));
+        System.out.println("OMG");
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+//        Context context = getApplicationContext();
+//        CharSequence text = "Hello toast!";
+//        int duration = Toast.LENGTH_SHORT;
+//        Toast toast = Toast.makeText(context, text, duration);
+//        toast.show();
+        mReceival.setText(new String(msg.getRecords()[0].getPayload()));
     }
 }
