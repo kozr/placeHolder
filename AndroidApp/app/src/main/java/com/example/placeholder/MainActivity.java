@@ -2,6 +2,9 @@ package com.example.placeholder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.scanner;
+import java.io.*;
+
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NdefMessage;
@@ -43,8 +46,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
 
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
-        String text = ("Beam me up, Android!\n\n" +
-                "Beam Time: " + System.currentTimeMillis());
+        String text = new Scanner(new File("testJSON.json")).useDelimiter("\\Z").next();
         NdefMessage msg = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
             msg = new NdefMessage(
@@ -97,5 +99,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
 //        Toast toast = Toast.makeText(context, text, duration);
 //        toast.show();
         mReceival.setText(new String(msg.getRecords()[0].getPayload()));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("JSON.json"));
+        writer.write(new String(msg.getRecords()[0].getPayload()));
     }
 }
