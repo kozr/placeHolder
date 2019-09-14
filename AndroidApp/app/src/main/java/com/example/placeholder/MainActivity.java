@@ -9,10 +9,9 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import static android.nfc.NdefRecord.createMime;
 
@@ -51,9 +50,10 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
             msg = new NdefMessage(
                     new NdefRecord[]{createMime(
                             "application/vnd.com.example.placeholder", text.getBytes())
-                            , NdefRecord.createApplicationRecord("com.example.placeholder")
+//                            , NdefRecord.createApplicationRecord("com.example.placeholder")
                     });
         }
+
         System.out.println(text);
         return msg;
     }
@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
     @Override
     public void onResume() {
         super.onResume();
-        // Check to see that the Activity started due to an Android Beam
+        System.out.println( "onResume " + getIntent().getAction());
+        Log.i(TAG, "onResume");
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             System.out.println("HELELELEOEO");
             processIntent(getIntent());
@@ -70,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
 
     @Override
     public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         // onResume gets called after this to handle the intent
+        System.out.println("onNewIntent");
         setIntent(intent);
     }
 
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
         mReceival = (TextView) findViewById(R.id.receival);
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
                 NfcAdapter.EXTRA_NDEF_MESSAGES);
+
+//        NdefMessage ndefMessage = .getNdefMessage();
         // only one message sent during the beam
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         System.out.println(new String(msg.getRecords()[0].getPayload()));
