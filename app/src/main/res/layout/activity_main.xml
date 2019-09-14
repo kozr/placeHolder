@@ -8,24 +8,24 @@
 
     <ImageView
         android:id="@+id/phoneIcon"
-        android:layout_width="340dp"
-        android:layout_height="340dp"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="81dp"
+        android:layout_marginTop="75dp"
         android:contentDescription="phoneIcon"
         app:srcCompat="@drawable/ic_action_name" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="274dp"
-        android:layout_height="116dp"
+        android:layout_width="298dp"
+        android:layout_height="191dp"
         android:layout_below="@+id/phoneIcon"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="75dp"
         android:layout_marginRight="76dp"
-        android:text="Place your phone on top"
-        android:textSize="36dp"
+        android:gravity="center"
+        android:text="Enable NFC on your device and place it on top of this screen"
         android:textColor="#4a4a4a"
-        android:textStyle="bold"
-        android:gravity="center"/>
+        android:textSize="36dp"
+        android:textStyle="bold" />
 </RelativeLayout>

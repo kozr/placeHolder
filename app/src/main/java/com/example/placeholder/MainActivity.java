@@ -1,10 +1,12 @@
 package com.example.placeholder;
 
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -14,6 +16,14 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.io.IOException;
 
+import android.animation.ObjectAnimator;
+import android.animation.AnimatorSet;
+
+import android.graphics.Matrix;
+import android.widget.ImageView;
+import 	android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
+
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = MainActivity.class.getSimpleName();
@@ -22,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.getSupportActionBar().hide();
+        ImageView phoneIcon = findViewById(R.id.phoneIcon);
+        phoneIcon.startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely) );
 
         new GetData().execute();
     }
@@ -46,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(MainActivity.this,"Json Data is downloading",Toast.LENGTH_LONG).show();
-
         }
 
         @Override
