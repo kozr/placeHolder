@@ -87,5 +87,6 @@ public class MainActivity extends AppCompatActivity {
         //DSADSADSADASDSAD
     }
     
-      final WifiConnector connector = new WifiConnector(this);
+    final WifiConnector connector = new WifiConnector(this);
+    JSONFormatter json = new JSONFormatter();
 }

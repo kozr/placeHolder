@@ -20,21 +20,11 @@ import java.util.HashMap;
 import java.io.InputStream;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class JSONFormatter {
 
     private String TAG = MainActivity.class.getSimpleName();
-    private ListView lv;
 
-    ArrayList<HashMap<String, String>> contactList;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        contactList = new ArrayList<>();
-        lv = (ListView) findViewById(R.id.list);
-
+    public JSONFormatter(){
         new GetData().execute();
     }
 
@@ -73,17 +63,6 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         String username = wifi.getString("username");
                         String password = wifi.getString("password");
-
-                        // tmp hash map for single contact
-                        HashMap<String, String> info = new HashMap<>();
-
-                        // adding each child node to HashMap key => value
-                        info.put("username", username);
-                        info.put("password", password);
-
-                        // adding contact to contact list
-                        contactList.add(info);
-
                     } catch (final JSONException e) {
                         Log.e(TAG, "Json parsing error: " + e.getMessage());
                         runOnUiThread(new Runnable() {
@@ -118,10 +97,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            ListAdapter adapter = new SimpleAdapter(MainActivity.this, contactList,
-                    R.layout.list_item, new String[]{ "email","mobile"},
-                    new int[]{R.id.email, R.id.mobile});
-            lv.setAdapter(adapter);
+            
         }
     }
 }
