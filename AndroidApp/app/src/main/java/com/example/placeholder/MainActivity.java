@@ -15,16 +15,10 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import static android.nfc.NdefRecord.createMime;
 
 public class MainActivity extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback {
-
-    // public static final String TAG = "placeHolder";
-    //
-    // private TextView mTextView;
-    // private NfcAdapter mNfcAdapter;
 
     private NfcAdapter mNfcAdapter;
     private Context context;
@@ -55,17 +49,13 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
                     NdefRecord.createMime("application/vnd.com.example.placeholder", password.getBytes())
             );
         }
-        Log.d("MainActivity", "create NDEF message: " + msg);
         return msg;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //System.out.println("onResume " + getIntent().getAction());
-        Log.d("MainActivity", "onResume: " + getIntent().getAction());
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-
             processIntent(getIntent());
         }
     }
@@ -74,9 +64,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         // onResume gets called after this to handle the intent
-        System.out.println("onNewIntent");
-//        Intent i = new Intent(this, SuccessActivity.class);
-//        startActivity(i);
         setIntent(intent);
     }
 
