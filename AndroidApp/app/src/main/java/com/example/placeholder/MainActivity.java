@@ -28,6 +28,31 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
     private Context context;
     private TextView mReceival;
 
+    private Uri[] fileUris = new Uri[1];
+
+    private class FileUriCallback implements NfcAdapter.CreateBeamUrisCallback {
+        public FileUriCallback (){
+        }
+        @Override
+        public Uri[] createBeamUris(NfcEvent event){
+            String fileName = "purple.jpg";
+            File dir = getExternalFilesDir(null);
+            File sendFile = new File(dir, fileName);
+            sendFile.setReadable(true, false);
+            fileUri = Uri.fromFile(sendFile);
+            if (fileUri != null) {
+                fileUris[0] = fileUri;
+            } else {
+                Log.e("My Activity", "No File URI available for file.");
+                return null;
+            }
+            return fileUris;
+        }
+    }
+
+
+    private FileUriCallback fileUriCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +66,9 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
             mTextView.setText("NFC is working!");
         }
 
+        fileUriCallback = new FileUriCallback();
         mNfcAdapter.setNdefPushMessageCallback(this, this);
-
+        mNfcAdapter.setBeamPushUrisCallback(fileUriCallback,this);
     }
 
     @Override
@@ -82,11 +108,19 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
      */
     void processIntent(Intent intent) {
         mReceival = (TextView) findViewById(R.id.receival);
+        mPdfView = (TextView) findViewById(R.id.pdfView);
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
+
         NdefMessage msg = (NdefMessage) rawMsgs[0];
+
         System.out.println(new String(msg.getRecords()[0].getPayload()));
         System.out.println("OMG");
+
+        if (fileUris[0] != null){
+            System.out.println(uri.getPath());
+            File exposeFile = new File(uri.getPath());
+        }
         mReceival.setText(new String(msg.getRecords()[0].getPayload()) + new String(msg.getRecords()[1].getPayload()));
         new WifiConnector(this, new String(msg.getRecords()[0].getPayload()), new String(msg.getRecords()[1].getPayload()));
     }
