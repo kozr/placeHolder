@@ -1,0 +1,6 @@
+{
+  "wifi": {
+    "SSID": "123",
+    "preSharedKey": "abc"
+  }
+}
