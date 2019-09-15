@@ -1,5 +1,6 @@
 package com.example.placeholder;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -8,19 +9,19 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.widget.TextView;
 
 import static android.nfc.NdefRecord.createMime;
 
 public class MainActivity extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback {
 
-//    public static final String TAG = "placeHolder";
-//
-//    private TextView mTextView;
-//    private NfcAdapter mNfcAdapter;
+    // public static final String TAG = "placeHolder";
+    //
+    // private TextView mTextView;
+    // private NfcAdapter mNfcAdapter;
 
     private TextView mTextView;
     private NfcAdapter mNfcAdapter;
@@ -46,26 +47,22 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
 
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
-        String text = ("Beam me up, Android!\n\n" +
-                "Beam Time: " + System.currentTimeMillis());
+        String ssid = "Hack the North";
+        String password = "uwaterloo";
         NdefMessage msg = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
             msg = new NdefMessage(
-                    new NdefRecord[]{createMime(
-                            "application/vnd.com.example.placeholder", text.getBytes())
-//                            , NdefRecord.createApplicationRecord("com.example.placeholder")
-                    });
+                    NdefRecord.createMime("application/vnd.com.example.placeholder", ssid.getBytes()),
+                    NdefRecord.createMime("application/vnd.com.example.placeholder", password.getBytes())
+            );
         }
-
-        System.out.println(text);
         return msg;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        System.out.println( "onResume " + getIntent().getAction());
-        Log.i(TAG, "onResume");
+        System.out.println("onResume " + getIntent().getAction());
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             System.out.println("HELELELEOEO");
             processIntent(getIntent());
@@ -85,23 +82,14 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
      */
     void processIntent(Intent intent) {
         mReceival = (TextView) findViewById(R.id.receival);
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
-                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
-//        NdefMessage ndefMessage = .getNdefMessage();
-        // only one message sent during the beam
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         System.out.println(new String(msg.getRecords()[0].getPayload()));
         System.out.println("OMG");
-        // record 0 contains the MIME type, record 1 is the AAR, if present
-//        Context context = getApplicationContext();
-//        CharSequence text = "Hello toast!";
-//        int duration = Toast.LENGTH_SHORT;
-//        Toast toast = Toast.makeText(context, text, duration);
-//        toast.show();
-        mReceival.setText(new String(msg.getRecords()[0].getPayload()));
+        mReceival.setText(new String(msg.getRecords()[0].getPayload()) + new String(msg.getRecords()[1].getPayload()));
+        new WifiConnector(this, new String(msg.getRecords()[0].getPayload()), new String(msg.getRecords()[1].getPayload()));
     }
-    
-    final WifiConnector connector = new WifiConnector(this);
-    JSONFormatter json = new JSONFormatter();
+
+//    JSONFormatter json = new JSONFormatter();
 }

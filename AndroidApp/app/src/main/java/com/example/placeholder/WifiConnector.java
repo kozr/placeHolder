@@ -3,20 +3,16 @@ package com.example.placeholder;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import java.util.List;
 
 
 public class WifiConnector {
 
-    final String networkSSID = "Hack the North";
-    final String networkPass = "uwaterloo";
+//    final String networkSSID = "Hack the North";
+//    final String networkPass = "uwaterloo";
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    public WifiConnector(Context context) {
+    public WifiConnector(Context context, String networkSSID, String networkPass) {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + networkSSID + "\"";
         conf.preSharedKey = "\""+ networkPass +"\"";

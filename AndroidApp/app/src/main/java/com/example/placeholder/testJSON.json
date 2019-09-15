@@ -1,6 +1,6 @@
 {
   "wifi": {
-    "username": "123",
-    "password": "abc"
+    "SSID": "123",
+    "preSharedKey": "abc"
   }
 }
