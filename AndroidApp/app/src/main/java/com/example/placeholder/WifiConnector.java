@@ -1,6 +1,7 @@
 package com.example.placeholder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
@@ -8,9 +9,6 @@ import java.util.List;
 
 
 public class WifiConnector {
-
-//    final String networkSSID = "Hack the North";
-//    final String networkPass = "uwaterloo";
 
     public WifiConnector(Context context, String networkSSID, String networkPass) {
         WifiConfiguration conf = new WifiConfiguration();

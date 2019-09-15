@@ -12,6 +12,8 @@ import android.nfc.NfcEvent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import static android.nfc.NdefRecord.createMime;
@@ -23,26 +25,22 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
     // private TextView mTextView;
     // private NfcAdapter mNfcAdapter;
 
-    private TextView mTextView;
     private NfcAdapter mNfcAdapter;
     private Context context;
-    private TextView mReceival;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
-        mTextView = (TextView) findViewById(R.id.helloWorld);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
-        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
-            mTextView.setText("NFC is disabled.");
-        } else {
-            mTextView.setText("NFC is working!");
-        }
+
+        this.getSupportActionBar().hide();
+        ImageView phoneIcon = findViewById(R.id.phoneIcon);
+        phoneIcon.startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely) );
 
         mNfcAdapter.setNdefPushMessageCallback(this, this);
-
     }
 
     @Override
@@ -64,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
         super.onResume();
         System.out.println("onResume " + getIntent().getAction());
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-            System.out.println("HELELELEOEO");
+            Intent i = new Intent(this, SuccessActivity.class);
+            startActivity(i);
             processIntent(getIntent());
         }
     }
@@ -74,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
         super.onNewIntent(intent);
         // onResume gets called after this to handle the intent
         System.out.println("onNewIntent");
+//        Intent i = new Intent(this, SuccessActivity.class);
+//        startActivity(i);
         setIntent(intent);
     }
 
@@ -81,15 +82,10 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
      * Parses the NDEF Message from the intent and prints to the TextView
      */
     void processIntent(Intent intent) {
-        mReceival = (TextView) findViewById(R.id.receival);
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         System.out.println(new String(msg.getRecords()[0].getPayload()));
-        System.out.println("OMG");
-        mReceival.setText(new String(msg.getRecords()[0].getPayload()) + new String(msg.getRecords()[1].getPayload()));
         new WifiConnector(this, new String(msg.getRecords()[0].getPayload()), new String(msg.getRecords()[1].getPayload()));
     }
-
-//    JSONFormatter json = new JSONFormatter();
 }
