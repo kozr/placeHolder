@@ -39,7 +39,12 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
             File dir = getExternalFilesDir(null);
             File sendFile = new File(dir, fileName);
             sendFile.setReadable(true, false);
-            fileUri = Uri.fromFile(sendFile);
+            Bitmap bm = BitmapFactory.decodeFile(sendFile);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+            byte[] b = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+            fileUri = Uri.parse(encodedImage);
             if (fileUri != null) {
                 fileUris[0] = fileUri;
             } else {
@@ -109,18 +114,25 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
     void processIntent(Intent intent) {
         mReceival = (TextView) findViewById(R.id.receival);
         mPdfView = (TextView) findViewById(R.id.pdfView);
+        try{
+            Uri uri = intent.getData()[0];
+            String encodedImage = uri.toString();
+            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap bm = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            ImageView image = (ImageView) findViewById(R.id.image);
+            image.setImageBitmap(decodedByte);
+            return;
+        }
+        catch(Exception e){
+        }
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-
 
         NdefMessage msg = (NdefMessage) rawMsgs[0];
 
         System.out.println(new String(msg.getRecords()[0].getPayload()));
         System.out.println("OMG");
 
-        if (fileUris[0] != null){
-            System.out.println(uri.getPath());
-            File exposeFile = new File(uri.getPath());
-        }
+
         mReceival.setText(new String(msg.getRecords()[0].getPayload()) + new String(msg.getRecords()[1].getPayload()));
         new WifiConnector(this, new String(msg.getRecords()[0].getPayload()), new String(msg.getRecords()[1].getPayload()));
     }
